@@ -6,16 +6,18 @@ A feature-rich fullstack web application to find the best deals on video games, 
 
 - **Advanced Search:** Filter by price, rating, and sort by various criteria.
 - **Freebie Central:** Real-time tracking of game giveaways via GamerPower API.
-- **Price History:** Interactive charts showing current deals vs. historical lows.
-- **System Requirements:** Check PC specs (Min/Rec) for any game.
-- **Localization:** Multi-language support (English & Spanish).
-- **User Profiles:** Save games to a personalized watchlist and manage preferences. Features **Auto-Logout** on browser close for security.
+- **Price Analytics:** Interactive Recharts graphs showing current deals vs. historical lows.
+- **System Requirements:** Check PC specs (Min/Rec) for any game with integrated "Can I Run It?" links.
+- **My Wishlist:** Save games to a personalized watchlist with automated crack status tracking.
+- **Localization:** Multi-language support (English & Spanish) with user-saved preferences.
+- **Smart Navigation:** Intelligent route handling that resets page states on navigation.
+- **Security:** Session-based authentication with **Auto-Logout** on browser close.
 
 ## Technical Stack
 
-- **Frontend:** React, Tailwind CSS, Vite, Recharts, i18next.
+- **Frontend:** React (Vite), Tailwind CSS, Recharts, i18next, React Router.
 - **Backend:** Node.js, Express, Mongoose, MongoDB, JWT.
-- **APIs:** CheapShark, GamerPower, RAWG, CrackWatcher.
+- **APIs:** CheapShark, GamerPower, RAWG, GameStatus.
 
 ## Getting Started
 
@@ -35,3 +37,16 @@ A feature-rich fullstack web application to find the best deals on video games, 
    JWT_SECRET=your_jwt_secret
    RAWG_API_KEY=your_rawg_api_key
    ```
+3. Run `npm install` and `npm start`.
+
+### 2. Setup Frontend
+
+1. Go to the `frontend` directory.
+2. Run `npm install` and `npm run dev`.
+3. Open `http://localhost:5173` in your browser.
+
+## Project Structure
+
+- `backend/`: Express server and MongoDB models.
+- `frontend/`: React application with Tailwind CSS and Recharts.
+- `project details.md`: Comprehensive technical and feature documentation.
