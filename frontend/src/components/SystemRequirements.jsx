@@ -7,13 +7,23 @@ const SystemRequirements = ({ details }) => {
   const requirements = pcPlatform?.requirements;
 
   if (!requirements || (!requirements.minimum && !requirements.recommended)) {
+    const isPC = details.platforms.some(p => p.platform.name === "PC");
     return (
-      <div className="mt-8 p-6 bg-gray-900/50 rounded-xl border border-gray-700">
-        <h3 className="text-xl font-bold mb-4 text-blue-400">System Requirements</h3>
-        <p className="text-gray-400 italic">No specific PC requirements found for this title.</p>
-      </div>
-    );
-  }
+      <div className="mt-8 p-8 bg-gray-900/30 rounded-2xl border border-gray-700 border-dashed text-center">
+        <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-gray-300">System Requirements</h3>
+        <p className="text-gray-500 max-w-md mx-auto text-sm">
+          {isPC 
+            ? "We couldn't find specific PC hardware requirements for this title."
+            : "This game doesn't appear to be available on PC, which is why no system requirements are listed here."}
+        </p>
+        </div>
+        );
+        }
 
   const formatReq = (text) => {
     if (!text) return null;

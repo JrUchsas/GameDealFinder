@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import GameList from '../components/GameList';
 import DealDetails from '../components/DealDetails';
@@ -16,6 +17,7 @@ function Home() {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [resultsTitle, setResultsTitle] = useState('Trending Deals');
+  const location = useLocation();
   
   const [filters, setFilters] = useState({
     sortBy: 'Deal Rating',
@@ -24,6 +26,21 @@ function Home() {
     onSale: false,
     title: ''
   });
+
+  // Reset state when navigating to home page (via logo or home link)
+  useEffect(() => {
+    setSelectedGame(null);
+    setActiveNumericID(null);
+    setError(null);
+    setFilters({
+      sortBy: 'Deal Rating',
+      upperPrice: 50,
+      metacritic: 0,
+      onSale: false,
+      title: ''
+    });
+    handleApplyFilters();
+  }, [location]);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -35,7 +52,6 @@ function Home() {
       }
     };
     fetchStores();
-    handleApplyFilters();
   }, []);
 
   const handleApplyFilters = async () => {

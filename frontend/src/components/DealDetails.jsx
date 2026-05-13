@@ -57,12 +57,12 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
   };
 
   const getStoreName = (storeID) => {
-    const store = stores.find((s) => s.storeID === storeID);
+    const store = stores.find((s) => s.storeID.toString() === storeID.toString());
     return store ? store.storeName : 'Unknown Store';
   };
 
   const getStoreIcon = (storeID) => {
-    const store = stores.find((s) => s.storeID === storeID);
+    const store = stores.find((s) => s.storeID.toString() === storeID.toString());
     return store ? `https://www.cheapshark.com${store.images.icon}` : null;
   };
 
@@ -117,14 +117,28 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
               <button
                 onClick={handleSave}
                 disabled={saveLoading}
-                className={`whitespace-nowrap px-8 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-xl ${
+                className={`w-full whitespace-nowrap px-8 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-xl ${
                   token 
                     ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/20' 
                     : 'bg-gray-700 text-gray-500 cursor-not-allowed opacity-50'
                 }`}
               >
-                {saveLoading ? 'Saving...' : 'Add to Watchlist'}
+                {saveLoading ? 'Saving...' : 'Add to Wishlist'}
               </button>
+
+              {rawgDetails?.platforms?.some(p => p.platform.name === "PC") && (
+                <a 
+                  href={`https://www.systemrequirementslab.com/cyri/search?q=${encodeURIComponent(rawgDetails.name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 px-8 py-3 bg-gray-700/50 hover:bg-gray-700 text-blue-400 border border-gray-600 rounded-xl font-bold transition-all text-sm shadow-xl"
+                >
+                  Can I Run It?
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
               
               {saveMessage && (
                 <div className={`px-4 py-2 rounded-lg text-xs font-bold animate-fade-in ${
@@ -175,24 +189,24 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
               </div>
             </section>
 
+            {/* Technical Specs Section */}
+            <section id="specs">
+              {rawgLoading ? (
+                <div className="flex flex-col items-center justify-center p-12 bg-gray-900/20 rounded-2xl border border-gray-700/50">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                  <p className="text-sm text-gray-500">Checking hardware compatibility...</p>
+                </div>
+              ) : (
+                <SystemRequirements details={rawgDetails} />
+              )}
+            </section>
+
             {/* Price Analytics Section */}
             <section>
               <PriceHistory 
                 cheapestEver={gameData.cheapestPriceEver} 
                 currentDeals={gameData.deals} 
               />
-            </section>
-
-            {/* Technical Specs Section */}
-            <section id="specs">
-              {rawgLoading ? (
-                <div className="flex flex-col items-center justify-center p-12 bg-gray-900/20 rounded-2xl border border-gray-700/50">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-                  <p className="text-sm text-gray-500">Scanning system requirements...</p>
-                </div>
-              ) : (
-                <SystemRequirements details={rawgDetails} />
-              )}
             </section>
           </div>
         </div>
