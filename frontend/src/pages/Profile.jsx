@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DealDetails from '../components/DealDetails';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -16,7 +16,15 @@ function Profile() {
   const [error, setError] = useState(null);
   
   const navigate = useNavigate();
+  const location = useLocation();
   const token = sessionStorage.getItem('token');
+
+  // Reset state when navigating to profile page
+  useEffect(() => {
+    setSelectedGame(null);
+    setActiveNumericID(null);
+    setError(null);
+  }, [location]);
 
   useEffect(() => {
     if (!token) {
