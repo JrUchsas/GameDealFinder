@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const SavedGame = require('../models/SavedGame');
+const User = require('../models/User');
 const axios = require('axios');
 
 // Get user preferences
 router.get('/preferences', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
-    res.json(user.preferences);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user.preferences || { language: 'en', currency: 'USD' });
   } catch (error) {
+    console.error('Fetch preferences error:', error);
     res.status(500).json({ error: 'Failed to fetch preferences' });
   }
 });
@@ -18,13 +21,22 @@ router.get('/preferences', auth, async (req, res) => {
 router.put('/preferences', auth, async (req, res) => {
   try {
     const { language, currency } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { preferences: { language, currency } },
-      { new: true }
-    );
+    const user = await User.findById(req.user.userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update preferences object
+    user.preferences = {
+      language: language || user.preferences.language,
+      currency: currency || user.preferences.currency
+    };
+
+    await user.save();
     res.json(user.preferences);
   } catch (error) {
+    console.error('Update preferences error:', error);
     res.status(500).json({ error: 'Failed to update preferences' });
   }
 });
@@ -44,19 +56,27 @@ router.post('/saved-games', auth, async (req, res) => {
   try {
     const { gameId, title, thumb } = req.body;
     
-    // Check if already saved
-    const existing = await SavedGame.findOne({ userId: req.user.userId, gameId });
+    // Check if already saved by ID OR Title for this specific user
+    const existing = await SavedGame.findOne({ 
+      userId: req.user.userId, 
+      $or: [
+        { gameId },
+        { title: { $regex: new RegExp(`^${title.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') } }
+      ]
+    });
+
     if (existing) return res.status(400).json({ error: 'Game already saved' });
 
     const newSavedGame = new SavedGame({
       userId: req.user.userId,
-      gameId,
+      gameId: gameId || title, // Fallback to title if gameId is missing
       title,
       thumb
     });
     await newSavedGame.save();
     res.status(201).json(newSavedGame);
   } catch (error) {
+    console.error('Save game error:', error);
     res.status(500).json({ error: 'Failed to save game' });
   }
 });

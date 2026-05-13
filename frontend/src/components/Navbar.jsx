@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Navbar() {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     window.location.href = '/';
   };
 

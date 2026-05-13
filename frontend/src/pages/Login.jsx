@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(`${API_BASE}/auth/login`, { email, password });
-      localStorage.setItem('token', response.data.token);
+      sessionStorage.setItem('token', response.data.token);
       window.location.href = '/'; // Reload to update navbar
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');

@@ -9,7 +9,7 @@ A feature-rich fullstack web application to find the best deals on video games, 
 - **Price History:** Interactive charts showing current deals vs. historical lows.
 - **System Requirements:** Check PC specs (Min/Rec) for any game.
 - **Localization:** Multi-language support (English & Spanish).
-- **User Profiles:** Save games to a personalized watchlist and manage preferences.
+- **User Profiles:** Save games to a personalized watchlist and manage preferences. Features **Auto-Logout** on browser close for security.
 
 ## Technical Stack
 

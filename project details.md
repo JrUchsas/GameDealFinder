@@ -18,7 +18,7 @@ Game Deal Finder is a modern full-stack web application designed to help gamers 
 - **Runtime:** Node.js
 - **Framework:** Express.js
 - **Database:** MongoDB (using Mongoose ODM)
-- **Authentication:** JSON Web Tokens (JWT) & bcryptjs for password hashing
+- **Authentication:** JSON Web Tokens (JWT) & bcryptjs. Uses `sessionStorage` in the frontend for **Auto-Logout** when the browser is closed.
 - **Middleware:** Custom authentication middleware
 
 ### External APIs

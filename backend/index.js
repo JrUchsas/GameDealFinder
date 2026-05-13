@@ -73,7 +73,12 @@ app.get('/api/freebies', async (req, res) => {
 app.get('/api/games/details/:title', async (req, res) => {
   try {
     const { title } = req.params;
-    const RAWG_API_KEY = process.env.RAWG_API_KEY; // Should be in .env
+    const RAWG_API_KEY = process.env.RAWG_API_KEY;
+    
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key') {
+      console.error('RAWG API Key is missing or not configured in .env');
+      return res.status(500).json({ error: 'RAWG API configuration missing' });
+    }
     
     // First, search for the game to get the ID/slug
     const searchRes = await axios.get(`https://api.rawg.io/api/games?search=${encodeURIComponent(title)}&key=${RAWG_API_KEY}`);
