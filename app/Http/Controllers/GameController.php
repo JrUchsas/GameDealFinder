@@ -10,6 +10,11 @@ class GameController extends Controller
 {
     private const CHEAPSHARK_API = 'https://www.cheapshark.com/api/1.0';
 
+    private function httpClient()
+    {
+        return Http::withUserAgent('GameDealFinderApp/1.0 (contact@gamedealfinder.org)')->withoutVerifying();
+    }
+
     /**
      * Render the homepage.
      */
@@ -32,7 +37,7 @@ class GameController extends Controller
     public function getStores()
     {
         try {
-            $response = Http::get(self::CHEAPSHARK_API . '/stores');
+            $response = $this->httpClient()->get(self::CHEAPSHARK_API . '/stores');
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch stores: ' . $e->getMessage()], 500);
@@ -50,7 +55,7 @@ class GameController extends Controller
         }
 
         try {
-            $response = Http::get(self::CHEAPSHARK_API . '/games', [
+            $response = $this->httpClient()->get(self::CHEAPSHARK_API . '/games', [
                 'title' => $title
             ]);
             return response()->json($response->json(), $response->status());
@@ -65,7 +70,7 @@ class GameController extends Controller
     public function getDeals(Request $request)
     {
         try {
-            $response = Http::get(self::CHEAPSHARK_API . '/deals', $request->query());
+            $response = $this->httpClient()->get(self::CHEAPSHARK_API . '/deals', $request->query());
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch deals: ' . $e->getMessage()], 500);
@@ -78,7 +83,7 @@ class GameController extends Controller
     public function getGameDeals($id)
     {
         try {
-            $response = Http::get(self::CHEAPSHARK_API . '/games', [
+            $response = $this->httpClient()->get(self::CHEAPSHARK_API . '/games', [
                 'id' => $id
             ]);
             return response()->json($response->json(), $response->status());
@@ -93,7 +98,7 @@ class GameController extends Controller
     public function getFreebies()
     {
         try {
-            $response = Http::get('https://www.gamerpower.com/api/giveaways');
+            $response = $this->httpClient()->get('https://www.gamerpower.com/api/giveaways');
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch freebies: ' . $e->getMessage()], 500);
@@ -112,7 +117,7 @@ class GameController extends Controller
             }
 
             // Search for the game to get the ID/slug
-            $searchResponse = Http::get('https://api.rawg.io/api/games', [
+            $searchResponse = $this->httpClient()->get('https://api.rawg.io/api/games', [
                 'search' => $title,
                 'key' => $apiKey
             ]);
@@ -125,7 +130,7 @@ class GameController extends Controller
             $gameId = $results[0]['id'];
 
             // Fetch details using the game ID
-            $detailResponse = Http::get("https://api.rawg.io/api/games/{$gameId}", [
+            $detailResponse = $this->httpClient()->get("https://api.rawg.io/api/games/{$gameId}", [
                 'key' => $apiKey
             ]);
 
@@ -141,7 +146,7 @@ class GameController extends Controller
     public function getCrackStatus($title)
     {
         try {
-            $response = Http::get('https://crackwatcher.com/api/v1/games', [
+            $response = $this->httpClient()->get('https://crackwatcher.com/api/v1/games', [
                 'search' => $title
             ]);
 

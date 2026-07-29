@@ -11,6 +11,10 @@ Route::get('/', [GameController::class, 'index'])->name('home');
 Route::get('/freebies', [GameController::class, 'freebies'])->name('freebies');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect()->route('home');
+    })->name('dashboard');
+
     Route::get('/profile', function () {
         return Inertia::render('Profile');
     })->name('profile');
