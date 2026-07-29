@@ -9,3 +9,12 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Tell GitHub to ignore compiled assets or vendor files in language stats
+public/js/* linguist-vendored
+public/build/* linguist-vendored
+node_modules/* linguist-vendored
+
+# You can also explicitly mark your Blade/PHP files to ensure they are counted
+*.blade.php linguist-language=Blade
+*.php linguist-language=PHP
