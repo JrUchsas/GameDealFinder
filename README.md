@@ -1,52 +1,59 @@
-# Game Deal Finder
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-A feature-rich fullstack web application to find the best deals on video games, track giveaways, and check PC system requirements.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Features
+## About Laravel
 
-- **Advanced Search:** Filter by price, rating, and sort by various criteria.
-- **Freebie Central:** Real-time tracking of game giveaways via GamerPower API.
-- **Price Analytics:** Interactive Recharts graphs showing current deals vs. historical lows.
-- **System Requirements:** Check PC specs (Min/Rec) for any game with integrated "Can I Run It?" links.
-- **My Wishlist:** Save games to a personalized watchlist with automated crack status tracking.
-- **Localization:** Multi-language support (English & Spanish) with user-saved preferences.
-- **Smart Navigation:** Intelligent route handling that resets page states on navigation.
-- **Security:** Session-based authentication with **Auto-Logout** on browser close.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Technical Stack
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-- **Frontend:** React (Vite), Tailwind CSS, Recharts, i18next, React Router.
-- **Backend:** Node.js, Express, Mongoose, MongoDB, JWT.
-- **APIs:** CheapShark, GamerPower, RAWG, GameStatus.
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Getting Started
+## Learning Laravel
 
-### Prerequisites
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-- Node.js & npm
-- MongoDB account (Atlas)
-- RAWG API Key (Get one at [rawg.io/apidocs](https://rawg.io/apidocs))
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-### 1. Setup Backend
+## Laravel Sponsors
 
-1. Go to the `backend` directory.
-2. Create a `.env` file with:
-   ```env
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   RAWG_API_KEY=your_rawg_api_key
-   ```
-3. Run `npm install` and `npm start`.
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### 2. Setup Frontend
+### Premium Partners
 
-1. Go to the `frontend` directory.
-2. Run `npm install` and `npm run dev`.
-3. Open `http://localhost:5173` in your browser.
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-## Project Structure
+## Contributing
 
-- `backend/`: Express server and MongoDB models.
-- `frontend/`: React application with Tailwind CSS and Recharts.
-- `project details.md`: Comprehensive technical and feature documentation.
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
