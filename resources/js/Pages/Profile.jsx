@@ -132,6 +132,12 @@ function Profile() {
     window.open(`https://fitgirl-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
   };
 
+  const openDodi = (e, gameTitle) => {
+    e.stopPropagation();
+    const cleanName = getCleanTitle(gameTitle);
+    window.open(`https://dodi-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
@@ -273,7 +279,7 @@ function Profile() {
                             </h3>
 
                             {/* Status & Release Group */}
-                            <div className="flex flex-wrap items-center gap-2 mb-4">
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
                               <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
                                 isCracked ? 'bg-green-900/50 text-green-400 border border-green-800' : 
                                 isUnreleased ? 'bg-blue-900/50 text-blue-400 border border-blue-800' : 
@@ -288,26 +294,41 @@ function Profile() {
                                   by {group}
                                 </span>
                               )}
+
+                              {isCracked && (
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1">
+                                  ✔ Repack Verified
+                                </span>
+                              )}
                             </div>
 
-                            {/* Torrent Buttons for Cracked Games */}
+                            {/* Verified Repack Mirror Links */}
                             {isCracked && (
-                              <div className="mb-4 space-y-2">
+                              <div className="mb-4 space-y-1.5 bg-gray-900/40 p-2.5 rounded-lg border border-gray-700/60">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Repack Mirrors</span>
+                                
                                 <button
-                                  onClick={(e) => open1337x(e, game.title)}
-                                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-2 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-900/20 active:scale-95"
+                                  onClick={(e) => openFitGirl(e, game.title)}
+                                  className="w-full bg-gray-800 hover:bg-gray-700 text-pink-300 font-bold py-1.5 px-3 rounded text-xs flex items-center justify-between transition-all border border-gray-700"
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                  </svg>
-                                  Download Torrent on 1337x.to
+                                  <span>🌸 FitGirl Repacks</span>
+                                  <span className="text-[10px] text-gray-400">Download →</span>
                                 </button>
 
                                 <button
-                                  onClick={(e) => openFitGirl(e, game.title)}
-                                  className="w-full bg-gray-700 hover:bg-gray-600 text-pink-300 font-bold py-1.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all active:scale-95 border border-gray-600"
+                                  onClick={(e) => openDodi(e, game.title)}
+                                  className="w-full bg-gray-800 hover:bg-gray-700 text-amber-300 font-bold py-1.5 px-3 rounded text-xs flex items-center justify-between transition-all border border-gray-700"
                                 >
-                                  Search FitGirl Repacks
+                                  <span>⚡ DODI Repacks</span>
+                                  <span className="text-[10px] text-gray-400">Download →</span>
+                                </button>
+
+                                <button
+                                  onClick={(e) => open1337x(e, game.title)}
+                                  className="w-full bg-gray-800 hover:bg-gray-700 text-emerald-400 font-bold py-1.5 px-3 rounded text-xs flex items-center justify-between transition-all border border-gray-700"
+                                >
+                                  <span>🏴‍☠️ 1337x Torrent Search</span>
+                                  <span className="text-[10px] text-gray-400">Search →</span>
                                 </button>
                               </div>
                             )}

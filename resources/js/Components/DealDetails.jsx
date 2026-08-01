@@ -127,6 +127,11 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
     window.open(`https://fitgirl-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
   };
 
+  const openDodi = () => {
+    const cleanName = getCleanTitle(gameData.info.title);
+    window.open(`https://dodi-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
+  };
+
   const getStoreName = (storeID) => {
     const store = stores.find((s) => s.storeID.toString() === storeID.toString());
     return store ? store.storeName : 'Unknown Store';
@@ -137,7 +142,6 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
     return store ? `https://www.cheapshark.com${store.images.icon}` : null;
   };
 
-  // Promo Code mapping for storefronts
   const getPromoCode = (storeName) => {
     const sName = (storeName || '').toLowerCase();
     if (sName.includes('fanatical')) return { code: 'FANATICAL10', discountPct: 10 };
@@ -243,12 +247,12 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
           </div>
 
           <div className="space-y-10">
-            {/* Crack Status & Download Section */}
+            {/* Crack Status & Repack Mirrors Section */}
             <section className="bg-gray-900/40 p-6 rounded-xl border border-gray-700/60">
               <h3 className="text-xl font-bold mb-4 text-gray-300 flex items-center justify-between">
                 <span className="flex items-center gap-3">
                   <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
-                  Crack Status & Availability
+                  Crack Status & Repack Mirrors
                 </span>
                 {crackInfo && (
                   <span className={`px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
@@ -264,37 +268,55 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
               {crackLoading ? (
                 <div className="text-sm text-gray-500 py-4 text-center">Checking crack status...</div>
               ) : crackInfo ? (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                  <div className="space-y-1 text-sm text-gray-300">
+                <div className="space-y-4 pt-2">
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300">
                     {crackInfo.readable_status && (
-                      <p><span className="text-gray-500">Status:</span> {crackInfo.readable_status}</p>
+                      <p><span className="text-gray-500">Status:</span> <span className="font-semibold text-white">{crackInfo.readable_status}</span></p>
                     )}
                     {crackInfo.hacked_groups && (
-                      <p><span className="text-gray-500">Cracked by:</span> <span className="font-bold text-purple-400">{crackInfo.hacked_groups}</span></p>
+                      <p><span className="text-gray-500">Group:</span> <span className="font-bold text-purple-400">{crackInfo.hacked_groups}</span></p>
                     )}
                     {crackInfo.protections && (
-                      <p><span className="text-gray-500">Protection:</span> {crackInfo.protections}</p>
+                      <p><span className="text-gray-500">Protection:</span> <span className="text-gray-300">{crackInfo.protections}</span></p>
+                    )}
+                    {crackInfo.is_cracked && (
+                      <span className="bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">
+                        ✔ Repacks Health: Verified
+                      </span>
                     )}
                   </div>
 
+                  {/* Repack Mirror Links */}
                   {crackInfo.is_cracked && (
-                    <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-                      <button
-                        onClick={open1337x}
-                        className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 text-sm"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Download on 1337x.to
-                      </button>
+                    <div className="bg-gray-800/60 p-4 rounded-xl border border-gray-700/80">
+                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">
+                        Direct Repack Mirrors & Torrents
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button
+                          onClick={openFitGirl}
+                          className="px-4 py-2.5 bg-gray-900 hover:bg-gray-700 text-pink-300 font-bold rounded-lg transition-all border border-gray-700 flex items-center justify-between text-xs shadow-md"
+                        >
+                          <span>🌸 FitGirl Repack</span>
+                          <span className="text-gray-500">→</span>
+                        </button>
 
-                      <button
-                        onClick={openFitGirl}
-                        className="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-pink-300 font-bold rounded-xl transition-all border border-gray-600 flex items-center justify-center gap-2 text-sm"
-                      >
-                        FitGirl Repacks
-                      </button>
+                        <button
+                          onClick={openDodi}
+                          className="px-4 py-2.5 bg-gray-900 hover:bg-gray-700 text-amber-300 font-bold rounded-lg transition-all border border-gray-700 flex items-center justify-between text-xs shadow-md"
+                        >
+                          <span>⚡ DODI Repack</span>
+                          <span className="text-gray-500">→</span>
+                        </button>
+
+                        <button
+                          onClick={open1337x}
+                          className="px-4 py-2.5 bg-gray-900 hover:bg-gray-700 text-emerald-400 font-bold rounded-lg transition-all border border-gray-700 flex items-center justify-between text-xs shadow-md"
+                        >
+                          <span>🏴‍☠️ 1337x Torrents</span>
+                          <span className="text-gray-500">→</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -303,7 +325,7 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
               )}
             </section>
 
-            {/* Deals Section with Promo Code Tracker (Feature 7) */}
+            {/* Deals Section with Promo Code Tracker */}
             <section>
               <h3 className="text-xl font-bold mb-6 text-gray-300 flex items-center gap-3">
                 <span className="w-1.5 h-6 bg-blue-500 rounded-full"></span>
@@ -373,7 +395,7 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
               />
             </section>
 
-            {/* Community Reviews & Comments Section (Feature 6) */}
+            {/* Community Reviews & Comments Section */}
             <section className="bg-gray-900/40 p-6 rounded-xl border border-gray-700/60">
               <h3 className="text-xl font-bold mb-6 text-gray-300 flex items-center justify-between">
                 <span className="flex items-center gap-3">
