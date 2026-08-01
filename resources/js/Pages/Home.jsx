@@ -100,17 +100,53 @@ function Home() {
     }
   };
 
+  // Find the top discount deal for the Steal of the Day hero banner
+  const stealOfTheDay = games && games.length > 0
+    ? [...games].sort((a, b) => (parseFloat(b.savings) || 0) - (parseFloat(a.savings) || 0))[0]
+    : null;
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
       <Head title="Home - Find Game Deals" />
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center mb-8">
           <h1 className="text-4xl font-extrabold text-blue-500 mb-2">Game Deal Finder</h1>
           <p className="text-gray-400 mb-6 font-medium">Find the best prices across all digital stores</p>
           <SearchBar onSearch={handleSearch} />
         </div>
+
+        {/* Steal of the Day Hero Banner */}
+        {stealOfTheDay && !selectedGame && (
+          <div className="mb-10 bg-gradient-to-r from-blue-950 via-gray-900 to-indigo-950 p-6 md:p-8 rounded-2xl border border-blue-500/40 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="absolute -top-12 -left-12 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div className="relative z-10 flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-xs font-black uppercase tracking-wider mb-3">
+                🔥 Steal of the Day — {Math.round(parseFloat(stealOfTheDay.savings || 0))}% OFF
+              </div>
+              <h2 className="text-3xl font-black text-white mb-2 leading-tight">{stealOfTheDay.title || stealOfTheDay.external}</h2>
+              <p className="text-gray-400 text-sm mb-4">Unbeatable price discount available right now across verified storefronts!</p>
+              
+              <div className="flex items-center gap-4">
+                <span className="text-3xl font-black text-emerald-400">${stealOfTheDay.salePrice || stealOfTheDay.cheapest}</span>
+                {stealOfTheDay.normalPrice && (
+                  <span className="text-gray-500 line-through text-lg font-medium">${stealOfTheDay.normalPrice}</span>
+                )}
+                <button
+                  onClick={() => handleSelectGame(stealOfTheDay.gameID)}
+                  className="ml-auto bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-900/30 active:scale-95 text-sm"
+                >
+                  View Deal Comparison
+                </button>
+              </div>
+            </div>
+
+            <div className="relative z-10 w-full md:w-48 shrink-0 aspect-[16/9] md:aspect-square overflow-hidden rounded-xl border border-gray-700 shadow-xl bg-gray-900">
+              <img src={stealOfTheDay.thumb} alt={stealOfTheDay.title} className="w-full h-full object-cover" />
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-72">

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,13 +35,18 @@ Route::prefix('api')->group(function () {
     Route::get('/games/details/{title}', [GameController::class, 'getRawgDetails']);
     Route::get('/user/crack-status/{title}', [GameController::class, 'getCrackStatus']);
 
-    // Authenticated Wishlist & Preferences
+    // Public Comments & Reviews
+    Route::get('/comments/{gameTitle}', [CommentController::class, 'getComments']);
+
+    // Authenticated Wishlist, Preferences & Review Submissions
     Route::middleware('auth')->group(function () {
         Route::get('/user/saved-games', [WishlistController::class, 'getSavedGames']);
         Route::post('/user/saved-games', [WishlistController::class, 'saveGame']);
         Route::delete('/user/saved-games/{gameId}', [WishlistController::class, 'removeSavedGame']);
         Route::get('/user/preferences', [WishlistController::class, 'getPreferences']);
         Route::put('/user/preferences', [WishlistController::class, 'updatePreferences']);
+
+        Route::post('/comments', [CommentController::class, 'addComment']);
     });
 });
 
