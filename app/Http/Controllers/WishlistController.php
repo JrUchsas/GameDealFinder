@@ -12,7 +12,8 @@ class WishlistController extends Controller
      */
     public function getSavedGames()
     {
-        $games = auth()->user()->savedGames;
+        $userId = (string) auth()->id();
+        $games = SavedGame::where('user_id', $userId)->get();
         return response()->json($games);
     }
 
@@ -27,16 +28,16 @@ class WishlistController extends Controller
             'thumb' => 'nullable|string',
         ]);
 
-        $userId = auth()->id();
-        $gameId = $request->input('gameId');
-        $title = $request->input('title');
-        $thumb = $request->input('thumb');
+        $userId = (string) auth()->id();
+        $gameId = (string) $request->input('gameId');
+        $title = (string) $request->input('title');
+        $thumb = (string) $request->input('thumb');
 
         // Check if already saved by this user by ID or title
         $existing = SavedGame::where('user_id', $userId)
             ->where(function ($query) use ($gameId, $title) {
                 $query->where('game_id', $gameId)
-                      ->orWhere('title', 'like', $title);
+                      ->orWhere('title', $title);
             })
             ->first();
 
@@ -59,8 +60,9 @@ class WishlistController extends Controller
      */
     public function removeSavedGame($gameId)
     {
-        SavedGame::where('user_id', auth()->id())
-            ->where('game_id', $gameId)
+        $userId = (string) auth()->id();
+        SavedGame::where('user_id', $userId)
+            ->where('game_id', (string) $gameId)
             ->delete();
 
         return response()->json(['message' => 'Game removed from saved list']);

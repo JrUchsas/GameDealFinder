@@ -13,7 +13,7 @@ function Profile() {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [crackStatuses, setCrackStatuses] = useState({});
+  const [crackData, setCrackData] = useState({});
   const [error, setError] = useState(null);
   const [preferences, setPreferences] = useState({ language: 'en', currency: 'USD' });
   const [prefSaving, setPrefSaving] = useState(false);
@@ -79,27 +79,14 @@ function Profile() {
   const fetchCrackStatus = async (title) => {
     try {
       const response = await axios.get(`/api/user/crack-status/${encodeURIComponent(title)}`);
-      const gameInfo = response.data;
+      const info = response.data;
       
-      let status = 'Unknown';
-      if (gameInfo) {
-        if (gameInfo.is_cracked) {
-          status = 'Cracked';
-        } else if (gameInfo.is_unreleased_game) {
-          status = 'Unreleased';
-        } else {
-          status = 'Uncracked';
-        }
-      } else {
-        status = 'Not Cracked';
-      }
-
-      setCrackStatuses(prev => ({
+      setCrackData(prev => ({
         ...prev,
-        [title]: status
+        [title]: info
       }));
     } catch (err) {
-      setCrackStatuses(prev => ({ ...prev, [title]: 'Error' }));
+      setCrackData(prev => ({ ...prev, [title]: null }));
     }
   };
 
@@ -127,6 +114,22 @@ function Profile() {
     } finally {
       setPrefSaving(false);
     }
+  };
+
+  const getCleanTitle = (title) => {
+    return title.replace(/\b(DIRECTORS?|CUT|GOTY|GAME OF THE YEAR|DELUXE|ULTIMATE|ENHANCED|REMASTERED|REMAKE|EDITION)\b/gi, '').trim();
+  };
+
+  const open1337x = (e, gameTitle) => {
+    e.stopPropagation();
+    const cleanName = getCleanTitle(gameTitle);
+    window.open(`https://1337x.to/search/${encodeURIComponent(cleanName)}/1/`, '_blank', 'noopener,noreferrer');
+  };
+
+  const openFitGirl = (e, gameTitle) => {
+    e.stopPropagation();
+    const cleanName = getCleanTitle(gameTitle);
+    window.open(`https://fitgirl-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
   };
 
   if (loading) {
@@ -251,38 +254,76 @@ function Profile() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {savedGames.map(game => (
-                      <div 
-                        key={game.game_id || game._id} 
-                        onClick={() => handleSelectGame(game)}
-                        className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 flex flex-col group hover:border-blue-500 transition-all cursor-pointer"
-                      >
-                        <img src={game.thumb} alt={game.title} className="w-full h-44 object-cover" />
-                        <div className="p-6 flex-grow flex flex-col">
-                          <h3 className="text-xl font-bold mb-4 text-gray-100 line-clamp-2 group-hover:text-blue-400 transition-colors">
-                            {game.title}
-                          </h3>
-                          
-                          <div className="mt-auto flex justify-between items-center">
-                            <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
-                              crackStatuses[game.title] === 'Cracked' ? 'bg-green-900/50 text-green-400 border border-green-800' : 
-                              crackStatuses[game.title] === 'Uncracked' ? 'bg-red-900/50 text-red-400 border border-red-800' : 
-                              crackStatuses[game.title] === 'Unreleased' ? 'bg-blue-900/50 text-blue-400 border border-blue-800' :
-                              'bg-gray-700 text-gray-300'
-                            }`}>
-                              {crackStatuses[game.title] || 'Checking...'}
-                            </span>
-                            
-                            <button 
-                              onClick={(e) => removeGame(e, game.game_id)}
-                              className="text-red-400 hover:text-red-300 text-sm font-bold transition-colors opacity-0 group-hover:opacity-100"
-                            >
-                              Remove
-                            </button>
+                    {savedGames.map(game => {
+                      const info = crackData[game.title];
+                      const isCracked = info && info.is_cracked;
+                      const isUnreleased = info && info.is_unreleased_game;
+                      const group = info && info.hacked_groups;
+
+                      return (
+                        <div 
+                          key={game.game_id || game._id} 
+                          onClick={() => handleSelectGame(game)}
+                          className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 flex flex-col group hover:border-blue-500 transition-all cursor-pointer"
+                        >
+                          <img src={game.thumb} alt={game.title} className="w-full h-44 object-cover" />
+                          <div className="p-6 flex-grow flex flex-col">
+                            <h3 className="text-xl font-bold mb-3 text-gray-100 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                              {game.title}
+                            </h3>
+
+                            {/* Status & Release Group */}
+                            <div className="flex flex-wrap items-center gap-2 mb-4">
+                              <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                                isCracked ? 'bg-green-900/50 text-green-400 border border-green-800' : 
+                                isUnreleased ? 'bg-blue-900/50 text-blue-400 border border-blue-800' : 
+                                info ? 'bg-red-900/50 text-red-400 border border-red-800' :
+                                'bg-gray-700 text-gray-300'
+                              }`}>
+                                {isCracked ? 'CRACKED' : isUnreleased ? 'UNRELEASED' : info ? 'UNCRACKED' : 'Checking...'}
+                              </span>
+
+                              {isCracked && group && (
+                                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-900/40 text-purple-300 border border-purple-800">
+                                  by {group}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Torrent Buttons for Cracked Games */}
+                            {isCracked && (
+                              <div className="mb-4 space-y-2">
+                                <button
+                                  onClick={(e) => open1337x(e, game.title)}
+                                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-2 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-900/20 active:scale-95"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                  </svg>
+                                  Download Torrent on 1337x.to
+                                </button>
+
+                                <button
+                                  onClick={(e) => openFitGirl(e, game.title)}
+                                  className="w-full bg-gray-700 hover:bg-gray-600 text-pink-300 font-bold py-1.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all active:scale-95 border border-gray-600"
+                                >
+                                  Search FitGirl Repacks
+                                </button>
+                              </div>
+                            )}
+
+                            <div className="mt-auto flex justify-end items-center pt-2">
+                              <button 
+                                onClick={(e) => removeGame(e, game.game_id)}
+                                className="text-red-400 hover:text-red-300 text-xs font-bold transition-colors"
+                              >
+                                Remove
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </>

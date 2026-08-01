@@ -9,6 +9,8 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
   const [saveMessage, setSaveMessage] = useState('');
   const [rawgDetails, setRawgDetails] = useState(null);
   const [rawgLoading, setRawgLoading] = useState(false);
+  const [crackInfo, setCrackInfo] = useState(null);
+  const [crackLoading, setCrackLoading] = useState(false);
 
   const { auth } = usePage().props;
   const isAuthenticated = !!(auth && auth.user);
@@ -16,6 +18,7 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
   useEffect(() => {
     if (gameData && gameData.info) {
       fetchRawgDetails(gameData.info.title);
+      fetchCrackInfo(gameData.info.title);
     }
   }, [gameData]);
 
@@ -28,6 +31,18 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
       console.error('Failed to fetch RAWG details:', err);
     } finally {
       setRawgLoading(false);
+    }
+  };
+
+  const fetchCrackInfo = async (title) => {
+    setCrackLoading(true);
+    try {
+      const response = await axios.get(`/api/user/crack-status/${encodeURIComponent(title)}`);
+      setCrackInfo(response.data);
+    } catch (err) {
+      console.error('Failed to fetch crack status:', err);
+    } finally {
+      setCrackLoading(false);
     }
   };
 
@@ -54,6 +69,20 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
     } finally {
       setSaveLoading(false);
     }
+  };
+
+  const getCleanTitle = (title) => {
+    return title.replace(/\b(DIRECTORS?|CUT|GOTY|GAME OF THE YEAR|DELUXE|ULTIMATE|ENHANCED|REMASTERED|REMAKE|EDITION)\b/gi, '').trim();
+  };
+
+  const open1337x = () => {
+    const cleanName = getCleanTitle(gameData.info.title);
+    window.open(`https://1337x.to/search/${encodeURIComponent(cleanName)}/1/`, '_blank', 'noopener,noreferrer');
+  };
+
+  const openFitGirl = () => {
+    const cleanName = getCleanTitle(gameData.info.title);
+    window.open(`https://fitgirl-repacks.site/?s=${encodeURIComponent(cleanName)}`, '_blank', 'noopener,noreferrer');
   };
 
   const getStoreName = (storeID) => {
@@ -153,6 +182,66 @@ const DealDetails = ({ gameData, stores, selectedGameID }) => {
           </div>
 
           <div className="space-y-10">
+            {/* Crack Status & Download Section */}
+            <section className="bg-gray-900/40 p-6 rounded-xl border border-gray-700/60">
+              <h3 className="text-xl font-bold mb-4 text-gray-300 flex items-center justify-between">
+                <span className="flex items-center gap-3">
+                  <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+                  Crack Status & Availability
+                </span>
+                {crackInfo && (
+                  <span className={`px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                    crackInfo.is_cracked ? 'bg-green-900/50 text-green-400 border border-green-800' :
+                    crackInfo.is_unreleased_game ? 'bg-blue-900/50 text-blue-400 border border-blue-800' :
+                    'bg-red-900/50 text-red-400 border border-red-800'
+                  }`}>
+                    {crackInfo.is_cracked ? 'CRACKED' : crackInfo.is_unreleased_game ? 'UNRELEASED' : 'UNCRACKED'}
+                  </span>
+                )}
+              </h3>
+
+              {crackLoading ? (
+                <div className="text-sm text-gray-500 py-4 text-center">Checking crack status...</div>
+              ) : crackInfo ? (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                  <div className="space-y-1 text-sm text-gray-300">
+                    {crackInfo.readable_status && (
+                      <p><span className="text-gray-500">Status:</span> {crackInfo.readable_status}</p>
+                    )}
+                    {crackInfo.hacked_groups && (
+                      <p><span className="text-gray-500">Cracked by:</span> <span className="font-bold text-purple-400">{crackInfo.hacked_groups}</span></p>
+                    )}
+                    {crackInfo.protections && (
+                      <p><span className="text-gray-500">Protection:</span> {crackInfo.protections}</p>
+                    )}
+                  </div>
+
+                  {crackInfo.is_cracked && (
+                    <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={open1337x}
+                        className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 text-sm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download on 1337x.to
+                      </button>
+
+                      <button
+                        onClick={openFitGirl}
+                        className="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-pink-300 font-bold rounded-xl transition-all border border-gray-600 flex items-center justify-center gap-2 text-sm"
+                      >
+                        FitGirl Repacks
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Crack status information unavailable for this title.</p>
+              )}
+            </section>
+
             {/* Deals Section */}
             <section>
               <h3 className="text-xl font-bold mb-6 text-gray-300 flex items-center gap-3">

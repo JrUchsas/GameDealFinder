@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 class SavedGame extends Model
 {
+    protected $connection = 'mongodb';
+    protected $collection = 'saved_games';
+
     protected $fillable = [
         'user_id',
         'game_id',
@@ -15,6 +18,6 @@ class SavedGame extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', '_id');
     }
 }

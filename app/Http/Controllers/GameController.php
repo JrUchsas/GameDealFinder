@@ -141,27 +141,58 @@ class GameController extends Controller
     }
 
     /**
-     * Proxy: Fetch crack status from CrackWatcher.
+     * Proxy: Fetch crack status from CrackWatcher with intelligent core title extraction.
      */
     public function getCrackStatus($title)
     {
         try {
+            // Clean trademark symbols
+            $cleanSearchTitle = preg_replace('/[™®©]/u', '', $title);
+
             $response = $this->httpClient()->get('https://crackwatcher.com/api/v1/games', [
-                'search' => $title
+                'search' => $cleanSearchTitle
             ]);
 
             $data = $response->json()['data'] ?? [];
 
-            // Attempt to find an exact title match, fallback to first result
-            $exactMatch = null;
-            foreach ($data as $game) {
-                if (isset($game['title']) && strcasecmp($game['title'], $title) === 0) {
-                    $exactMatch = $game;
-                    break;
+            // Fallback: If 0 results returned, strip edition keywords (e.g. DIRECTORS CUT, GOTY, REMASTERED)
+            if (empty($data)) {
+                $coreTitle = preg_replace('/\b(DIRECTORS?|CUT|GOTY|GAME OF THE YEAR|DELUXE|ULTIMATE|ENHANCED|REMASTERED|REMAKE|EDITION)\b/i', '', $cleanSearchTitle);
+                $coreTitle = trim(preg_replace('/\s+/', ' ', $coreTitle));
+
+                if (!empty($coreTitle) && $coreTitle !== $cleanSearchTitle) {
+                    $response = $this->httpClient()->get('https://crackwatcher.com/api/v1/games', [
+                        'search' => $coreTitle
+                    ]);
+                    $data = $response->json()['data'] ?? [];
                 }
             }
 
-            $result = $exactMatch ?? ($data[0] ?? null);
+            if (empty($data)) {
+                return response()->json(null);
+            }
+
+            $crackedMatch = null;
+            $partialMatch = null;
+            $cleanS = strtolower(preg_replace('/[^a-z0-9]/', '', $title));
+
+            foreach ($data as $game) {
+                $gTitle = strtolower($game['title'] ?? '');
+                $cleanG = preg_replace('/[^a-z0-9]/', '', $gTitle);
+
+                // Check if clean titles match or overlap
+                if ($cleanG === $cleanS || str_contains($cleanG, $cleanS) || str_contains($cleanS, $cleanG)) {
+                    if (!empty($game['is_cracked'])) {
+                        $crackedMatch = $game;
+                        break;
+                    }
+                    if (!$partialMatch) {
+                        $partialMatch = $game;
+                    }
+                }
+            }
+
+            $result = $crackedMatch ?? $partialMatch ?? $data[0];
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch crack status: ' . $e->getMessage()], 500);
