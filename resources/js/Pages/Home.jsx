@@ -17,6 +17,9 @@ function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const [resultsTitle, setResultsTitle] = useState('Trending Deals');
   
+  // Hero Carousel State
+  const [heroIndex, setHeroIndex] = useState(0);
+
   const [filters, setFilters] = useState({
     sortBy: 'Deal Rating',
     upperPrice: 50,
@@ -100,10 +103,20 @@ function Home() {
     }
   };
 
-  // Find the top discount deal for the Steal of the Day hero banner
-  const stealOfTheDay = games && games.length > 0
-    ? [...games].sort((a, b) => (parseFloat(b.savings) || 0) - (parseFloat(a.savings) || 0))[0]
-    : null;
+  // Top 5 Deals for Steal of the Day Carousel
+  const topDeals = games && games.length > 0
+    ? [...games].sort((a, b) => (parseFloat(b.savings) || 0) - (parseFloat(a.savings) || 0)).slice(0, 5)
+    : [];
+
+  const activeDeal = topDeals[heroIndex] || topDeals[0];
+
+  const handlePrevHero = () => {
+    setHeroIndex(prev => (prev === 0 ? topDeals.length - 1 : prev - 1));
+  };
+
+  const handleNextHero = () => {
+    setHeroIndex(prev => (prev === topDeals.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans flex flex-col">
@@ -117,33 +130,80 @@ function Home() {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        {/* Steal of the Day Hero Banner */}
-        {stealOfTheDay && !selectedGame && (
-          <div className="mb-10 bg-gradient-to-r from-blue-950 via-gray-900 to-indigo-950 p-6 md:p-8 rounded-2xl border border-blue-500/40 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Steal of the Day 5-Deal Carousel Hero Banner */}
+        {topDeals.length > 0 && !selectedGame && activeDeal && (
+          <div className="mb-10 bg-gradient-to-r from-blue-950 via-gray-900 to-indigo-950 p-6 md:p-8 rounded-2xl border border-blue-500/40 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 group">
             <div className="absolute -top-12 -left-12 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
-            <div className="relative z-10 flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-xs font-black uppercase tracking-wider mb-3">
-                🔥 Steal of the Day — {Math.round(parseFloat(stealOfTheDay.savings || 0))}% OFF
+
+            {/* Left Navigation Arrow */}
+            <button
+              onClick={handlePrevHero}
+              aria-label="Previous Deal"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-gray-900/80 hover:bg-blue-600 text-white p-3 rounded-full border border-gray-700 transition-all shadow-xl backdrop-blur-sm active:scale-95"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Right Navigation Arrow */}
+            <button
+              onClick={handleNextHero}
+              aria-label="Next Deal"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-gray-900/80 hover:bg-blue-600 text-white p-3 rounded-full border border-gray-700 transition-all shadow-xl backdrop-blur-sm active:scale-95"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Content Left */}
+            <div className="relative z-10 flex-1 px-8 md:px-6">
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-xs font-black uppercase tracking-wider">
+                  🔥 Steal of the Day — {Math.round(parseFloat(activeDeal.savings || 0))}% OFF
+                </span>
+                <span className="text-xs text-gray-400 font-semibold bg-gray-900/80 px-2.5 py-1 rounded-md border border-gray-700">
+                  Deal {heroIndex + 1} of {topDeals.length}
+                </span>
               </div>
-              <h2 className="text-3xl font-black text-white mb-2 leading-tight">{stealOfTheDay.title || stealOfTheDay.external}</h2>
+
+              <h2 className="text-3xl font-black text-white mb-2 leading-tight transition-all duration-300">
+                {activeDeal.title || activeDeal.external}
+              </h2>
               <p className="text-gray-400 text-sm mb-4">Unbeatable price discount available right now across verified storefronts!</p>
               
               <div className="flex items-center gap-4">
-                <span className="text-3xl font-black text-emerald-400">${stealOfTheDay.salePrice || stealOfTheDay.cheapest}</span>
-                {stealOfTheDay.normalPrice && (
-                  <span className="text-gray-500 line-through text-lg font-medium">${stealOfTheDay.normalPrice}</span>
+                <span className="text-3xl font-black text-emerald-400">${activeDeal.salePrice || activeDeal.cheapest}</span>
+                {activeDeal.normalPrice && (
+                  <span className="text-gray-500 line-through text-lg font-medium">${activeDeal.normalPrice}</span>
                 )}
                 <button
-                  onClick={() => handleSelectGame(stealOfTheDay.gameID)}
+                  onClick={() => handleSelectGame(activeDeal.gameID)}
                   className="ml-auto bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-900/30 active:scale-95 text-sm"
                 >
                   View Deal Comparison
                 </button>
               </div>
+
+              {/* Dots Indicator Bar */}
+              <div className="flex items-center gap-2 mt-6">
+                {topDeals.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setHeroIndex(i)}
+                    className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                      i === heroIndex ? 'w-8 bg-blue-500' : 'w-2.5 bg-gray-700 hover:bg-gray-500'
+                    }`}
+                    aria-label={`Go to deal ${i + 1}`}
+                  />
+                ))}
+              </div>
             </div>
 
-            <div className="relative z-10 w-full md:w-48 shrink-0 aspect-[16/9] md:aspect-square overflow-hidden rounded-xl border border-gray-700 shadow-xl bg-gray-900">
-              <img src={stealOfTheDay.thumb} alt={stealOfTheDay.title} className="w-full h-full object-cover" />
+            {/* Thumbnail Right */}
+            <div className="relative z-10 w-full md:w-56 shrink-0 aspect-[16/9] md:aspect-square overflow-hidden rounded-xl border border-gray-700 shadow-xl bg-gray-900">
+              <img src={activeDeal.thumb} alt={activeDeal.title} className="w-full h-full object-cover transition-opacity duration-300" />
             </div>
           </div>
         )}
